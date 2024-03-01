@@ -40,11 +40,18 @@ jobs:
 
       # Check if namespace exists before creating it
       - name: Check if namespace exists
-        run: kubectl get namespace helm || echo "Namespace does not exist"
+        run: |
+          if kubectl get namespace helm >/dev/null 2>&1; then
+            echo "Namespace exists"
+            exit 0
+          else
+            echo "Namespace does not exist"
+            exit 1
+          fi
 
       # Create namespace only if it doesn't already exist
       - name: Create namespace
-        if: ${{ !steps.check.outputs.exit-code }}
+        if: ${{ steps.check.outputs.exit-code }} == '1'
         run: kubectl create namespace helm
 
       # Deploy Helm chart to Kubernetes
