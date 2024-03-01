@@ -16,6 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Create the ~/.kube directory if it doesn't exist
+      - name: Create kube directory
+        run: mkdir -p ~/.kube
+
       # Set up kubectl using the provided KUBECONFIG secret
       - name: Set up kubectl
         run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
