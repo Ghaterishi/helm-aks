@@ -39,9 +39,8 @@ jobs:
 
       - name: Deploy Helm chart to Kubernetes
         run: |
-          helm install your-release-name hello-world/hello-world-*.tgz \
-            --namespace helm \
-            --set image.tag=$GITHUB_SHA
+          helm install nginx-helm hello-world/hello-world-*.tgz \
+            --namespace helm 
 
         env:
           GITHUB_SHA: ${{ github.sha }}
