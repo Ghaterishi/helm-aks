@@ -1,0 +1,38 @@
+name: Deploy Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'hello-world/**' # Path to your Helm chart files
+
+jobs:
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          helm-version: '3'
+
+      - name: Install dependencies
+        run: helm dependency update charts/your-chart-name
+
+      - name: Package Helm chart
+        run: helm package charts/your-chart-name -d charts/
+
+      - name: Deploy Helm chart to Kubernetes
+        run: |
+          helm upgrade --install your-release-name charts/your-chart-name-*.tgz \
+            --namespace your-namespace \
+            --set image.tag=$GITHUB_SHA
+
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          GITHUB_SHA: ${{ github.sha }}
