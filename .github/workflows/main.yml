@@ -16,32 +16,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Create the ~/.kube directory if it doesn't exist
       - name: Create kube directory
         run: mkdir -p ~/.kube
 
-      # Set up kubectl using the provided KUBECONFIG secret
       - name: Set up kubectl
         run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
       - name: Verify kubectl setup
         run: kubectl version
 
-      # Download and install Helm
       - name: Download Helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
           chmod 700 get_helm.sh
           ./get_helm.sh
 
-      # Package Helm chart
+      - name: Create namespace if not exists
+        run: kubectl create namespace helm --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Package Helm chart
         run: helm package hello-world -d hello-world/
 
-      # Deploy Helm chart to Kubernetes
       - name: Deploy Helm chart to Kubernetes
         run: |
-          helm install nginx-release hello-world/hello-world-*.tgz \
+          helm install your-release-name hello-world/hello-world-*.tgz \
             --namespace helm \
             --set image.tag=$GITHUB_SHA
 
