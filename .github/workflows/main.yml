@@ -29,8 +29,8 @@ jobs:
 
       - name: Deploy Helm chart to Kubernetes
         run: |
-          helm upgrade --install your-release-name charts/your-chart-name-*.tgz \
-            --namespace your-namespace \
+          helm upgrade --install hello-world-release charts/hello-world-*.tgz \
+            --namespace helm \
             --set image.tag=$GITHUB_SHA
 
         env:
