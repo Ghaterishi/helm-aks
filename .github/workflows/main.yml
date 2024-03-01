@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'hello-world/values.yaml'
+      - 'hello-world/**'
 
 jobs:
   deploy:
