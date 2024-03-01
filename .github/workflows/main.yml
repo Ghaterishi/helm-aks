@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'hello-world/**'
+      - 'hello-world/values.yaml'
 
 jobs:
   deploy:
@@ -16,10 +16,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Helm
-        uses: azure/setup-kubectl@v1
-        with:
-          helm-version: '3'
+      - name: Set up kubectl
+        run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+
+      - name: Verify kubectl setup
+        run: kubectl version --short
+
+      - name: Download Helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
 
       - name: Package Helm chart
         run: helm package hello-world -d hello-world/
@@ -27,9 +34,8 @@ jobs:
       - name: Deploy Helm chart to Kubernetes
         run: |
           helm upgrade --install your-release-name hello-world/hello-world-*.tgz \
-            --namespace helm \
+            --namespace your-namespace \
             --set image.tag=$GITHUB_SHA
 
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
           GITHUB_SHA: ${{ github.sha }}
