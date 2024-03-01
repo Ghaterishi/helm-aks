@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'hello-world/**' # Path to your Helm chart files
+      - 'hello-world/**'
 
 jobs:
   deploy:
@@ -21,15 +21,12 @@ jobs:
         with:
           helm-version: '3'
 
-      - name: Install dependencies
-        run: helm dependency update charts/your-chart-name
-
       - name: Package Helm chart
-        run: helm package charts/your-chart-name -d charts/
+        run: helm package hello-world -d hello-world/
 
       - name: Deploy Helm chart to Kubernetes
         run: |
-          helm upgrade --install hello-world-release charts/hello-world-*.tgz \
+          helm upgrade --install your-release-name hello-world/hello-world-*.tgz \
             --namespace helm \
             --set image.tag=$GITHUB_SHA
 
