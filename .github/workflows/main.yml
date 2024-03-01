@@ -16,21 +16,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Set up kubectl using the provided KUBECONFIG secret
       - name: Set up kubectl
         run: echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
       - name: Verify kubectl setup
         run: kubectl version --short
 
+      # Download and install Helm
       - name: Download Helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
           chmod 700 get_helm.sh
           ./get_helm.sh
 
+      # Package Helm chart
       - name: Package Helm chart
         run: helm package hello-world -d hello-world/
 
+      # Deploy Helm chart to Kubernetes
       - name: Deploy Helm chart to Kubernetes
         run: |
           helm upgrade --install your-release-name hello-world/hello-world-*.tgz \
